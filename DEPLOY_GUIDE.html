@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>OpenClaw 部署指南</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 24px;
+            border-bottom: 2px solid #1971c2;
+            padding-bottom: 10px;
+            color: #1971c2;
+        }
+        h2 {
+            font-size: 18px;
+            margin-top: 30px;
+            color: #2f9e44;
+            border-left: 4px solid #2f9e44;
+            padding-left: 10px;
+        }
+        h3 {
+            font-size: 15px;
+            margin-top: 20px;
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 12px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        th {
+            background: #f5f5f5;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background: #fafafa;
+        }
+        code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: "SF Mono", Monaco, monospace;
+            font-size: 11px;
+        }
+        pre {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 11px;
+        }
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+        }
+        .checkmark {
+            color: #2f9e44;
+            font-weight: bold;
+        }
+        .cross {
+            color: #e03131;
+            font-weight: bold;
+        }
+        .note {
+            background: #fff3bf;
+            border-left: 4px solid #f08c00;
+            padding: 10px 15px;
+            margin: 15px 0;
+        }
+        .step {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+        .step-num {
+            background: #1971c2;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            text-align: center;
+            font-size: 11px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+<h1>🤖 OpenClaw AI 助手系统 - 部署指南</h1>
+
+<h2>一、系统概述</h2>
+<p>OpenClaw 是一款面向个人的 AI 助手系统，支持多渠道接入、智能对话、任务自动化等功能。</p>
+
+<h2>二、核心功能</h2>
+<table>
+    <tr><th>功能模块</th><th>功能说明</th></tr>
+    <tr><td>多渠道消息</td><td>支持飞书、Telegram、Discord、WhatsApp 等消息平台</td></tr>
+    <tr><td>智能对话</td><td>基于 MiniMax 大模型（M2.1 / M2.5），支持长对话记忆</td></tr>
+    <tr><td>技能扩展</td><td>20+ 内置技能（天气、PPT生成、Excel处理等）</td></tr>
+    <tr><td>定时任务</td><td>Cron 自动化任务（心跳检查、日志轮转、备份等）</td></tr>
+    <tr><td>系统监控</td><td>实时监控系统健康、内存、磁盘、资源告警</td></tr>
+    <tr><td>记忆系统</td><td>三层记忆架构（L1/L2/L3），自动摘要与压缩</td></tr>
+    <tr><td>安全防护</td><td>危险操作拦截、敏感信息脱敏、操作审计</td></tr>
+</table>
+
+<h2>三、硬件要求</h2>
+<h3>3.1 最低配置</h3>
+<table>
+    <tr><th>项目</th><th>要求</th></tr>
+    <tr><td>CPU</td><td>Apple Silicon 或 Intel x86_64</td></tr>
+    <tr><td>内存</td><td>4 GB</td></tr>
+    <tr><td>存储</td><td>10 GB 可用空间</td></tr>
+    <tr><td>网络</td><td>稳定互联网（需访问 GitHub、MiniMax API）</td></tr>
+</table>
+
+<h3>3.2 推荐配置</h3>
+<table>
+    <tr><th>项目</th><th>推荐</th></tr>
+    <tr><td>CPU</td><td>Apple Silicon (M1/M2/M3) 或 Intel i5+</td></tr>
+    <tr><td>内存</td><td>8 GB 或以上</td></tr>
+    <tr><td>存储</td><td>20 GB 可用空间（SSD）</td></tr>
+    <tr><td>网络</td><td>宽带（20 Mbps+）</td></tr>
+</table>
+
+<h2>四、软件环境要求</h2>
+<h3>4.1 操作系统</h3>
+<table>
+    <tr><th>系统</th><th>版本</th><th>状态</th></tr>
+    <tr><td>macOS</td><td>12.0 (Monterey) 或更高</td><td><span class="checkmark">✅ 支持</span></td></tr>
+    <tr><td>Linux Ubuntu</td><td>20.04 或更高</td><td><span class="checkmark">✅ 支持</span></td></tr>
+    <tr><td>Linux Debian</td><td>11 或更高</td><td><span class="checkmark">✅ 支持</span></td></tr>
+    <tr><td>Linux CentOS</td><td>8 或更高</td><td><span class="checkmark">✅ 支持</span></td></tr>
+    <tr><td>Windows</td><td>不支持</td><td><span class="cross">❌ 需 WSL</span></td></tr>
+</table>
+
+<h3>4.2 必要软件</h3>
+<table>
+    <tr><th>软件</th><th>版本要求</th><th>安装方式</th></tr>
+    <tr><td>Node.js</td><td>20.x 或更高</td><td>自动安装 / 手动安装</td></tr>
+    <tr><td>Git</td><td>任意版本</td><td>自动安装</td></tr>
+    <tr><td>Homebrew</td><td>最新版</td><td>macOS 自动安装</td></tr>
+</table>
+
+<h3>4.3 网络要求</h3>
+<table>
+    <tr><th>域名</th><th>用途</th></tr>
+    <tr><td>github.com</td><td>代码仓库访问</td></tr>
+    <tr><td>api.minimaxi.com</td><td>MiniMax 大模型 API</td></tr>
+    <tr><td>open.feishu.cn</td><td>飞书消息 API</td></tr>
+</table>
+
+<h2>五、用户需准备的凭证</h2>
+<h3>5.1 必需凭证（3项）</h3>
+<table>
+    <tr><th>凭证名称</th><th>用途说明</th><th>获取方式</th></tr>
+    <tr>
+        <td><strong>MiniMax API Key</strong></td>
+        <td>调用大模型进行智能对话</td>
+        <td>1. 访问 <a href="https://platform.minimaxi.com">platform.minimaxi.com</a><br>2. 注册/登录账号<br>3. 进入"开放平台"<br>4. 创建 API Key</td>
+    </tr>
+    <tr>
+        <td><strong>飞书 App ID</strong></td>
+        <td>飞书消息应用标识</td>
+        <td>1. 访问 <a href="https://open.feishu.cn">open.feishu.cn</a><br>2. 创建企业自建应用<br>3. 获取 App ID</td>
+    </tr>
+    <tr>
+        <td><strong>飞书 App Secret</strong></td>
+        <td>飞书应用身份验证密钥</td>
+        <td>同上，在应用详情中获取</td>
+    </tr>
+</table>
+
+<h3>5.2 可选凭证</h3>
+<table>
+    <tr><th>凭证名称</th><th>用途</th><th>获取方式</th></tr>
+    <tr><td>Telegram Bot Token</td><td>Telegram 消息渠道</td><td>@BotFather 创建机器人获取</td></tr>
+    <tr><td>Discord Token</td><td>Discord 消息渠道</td><td>Discord Developer Portal 获取</td></tr>
+</table>
+
+<h2>六、部署后需替换的配置项</h2>
+<h3>6.1 配置文件位置</h3>
+<p><code>~/openclaw-deploy/configs/openclaw.json</code></p>
+
+<h3>6.2 需替换的占位符</h3>
+<table>
+    <tr><th>占位符</th><th>替换说明</th></tr>
+    <tr><td><code>${OPENCLAW_API_KEY}</code></td><td>替换为 MiniMax API Key</td></tr>
+    <tr><td><code>${FEISHU_APP_ID}</code></td><td>替换为飞书 App ID</td></tr>
+    <tr><td><code>${FEISHU_APP_SECRET}</code></td><td>替换为飞书 App Secret</td></tr>
+    <tr><td><code>${OPENCLAW_TOKEN}</code></td><td>Gateway 访问 Token（可选）</td></tr>
+</table>
+
+<h3>6.3 替换示例</h3>
+<pre><code>{
+  "models": {
+    "providers": {
+      "minimax-portal": {
+        "apiKey": "替换为你的 MiniMax API Key"
+      }
+    }
+  },
+  "channels": {
+    "feishu": {
+      "appId": "替换为你的飞书 App ID",
+      "appSecret": "替换为你的飞书 App Secret"
+    }
+  }
+}</code></pre>
+
+<h2>七、一键部署命令</h2>
+<h3>7.1 命令</h3>
+<pre><code>curl -fsSL https://raw.githubusercontent.com/cloudgg82-blip/openclaw-deploy/main/deploy.sh | bash</code></pre>
+
+<h3>7.2 部署流程</h3>
+<div class="step"><div class="step-num">1</div><div>复制命令</div></div>
+<div class="step"><div class="step-num">2</div><div>粘贴到终端</div></div>
+<div class="step"><div class="step-num">3</div><div>回车执行</div></div>
+<div class="step"><div class="step-num">4</div><div>自动安装（约5分钟完成）</div></div>
+
+<h2>八、部署后验证</h2>
+<pre><code># 检查服务状态
+openclaw status
+
+# 检查日志
+tail -f ~/.openclaw/logs/gateway.log</code></pre>
+
+<div class="note">
+<strong>提示：</strong> 部署完成后，请通过配置的渠道发送消息，验证系统响应正常。
+</div>
+
+<h2>九、部署检查清单</h2>
+<table>
+    <tr><th>阶段</th><th>项目</th></tr>
+    <tr><td rowspan="4">部署前确认</td><td>□ 硬件满足最低要求</td></tr>
+    <tr><td>□ 操作系统为 macOS 或 Linux</td></tr>
+    <tr><td>□ 网络可访问 GitHub 和 MiniMax API</td></tr>
+    <tr><td>□ 已获取 3 项必需凭证</td></tr>
+    <tr><td rowspan="4">部署后检查</td><td>□ openclaw status 显示 running</td></tr>
+    <tr><td>□ 配置文件已替换占位符</td></tr>
+    <tr><td>□ 渠道消息可正常收发</td></tr>
+    <tr><td>□ 大模型对话功能正常</td></tr>
+</table>
+
+<h2>十、技术支持</h2>
+<table>
+    <tr><th>渠道</th><th>地址</th></tr>
+    <tr><td>文档</td><td>https://docs.openclaw.ai</td></tr>
+    <tr><td>GitHub</td><td>https://github.com/openclaw/openclaw</td></tr>
+    <tr><td>问题反馈</td><td>GitHub Issues</td></tr>
+</table>
+
+<div class="footer">
+    <p>📄 文档版本：1.0 | 更新日期：2026-03-02</p>
+    <p>🚀 一键部署，5分钟上手</p>
+</div>
+
+</body>
+</html>
