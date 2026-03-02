@@ -1,0 +1,610 @@
+{
+  "version": 1,
+  "jobs": [
+    {
+      "id": "heartbeat-light",
+      "name": "心跳轻量 - 状态刷新",
+      "description": "轻量级状态刷新，12小时一次",
+      "enabled": true,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 */12 * * *",
+        "tz": "Asia/Shanghai",
+        "staggerMs": 300000
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "执行轻量级心跳：检查内存使用率（<90%）、进程存活、SQLite 文件大小（<100MB），记录状态到 state/heartbeat_light.json",
+        "model": "minimax-portal/MiniMax-M2.5",
+        "thinking": "off",
+        "timeoutSeconds": 60
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1772424180865,
+        "lastRunAtMs": 1772380980979,
+        "lastStatus": "ok",
+        "lastDurationMs": 36051,
+        "consecutiveErrors": 0,
+        "lastRunStatus": "ok",
+        "lastDeliveryStatus": "not-delivered",
+        "lastDelivered": false
+      },
+      "updatedAtMs": 1772381017030
+    },
+    {
+      "id": "heartbeat-heavy",
+      "name": "心跳重型 - 深度整理",
+      "description": "深度系统整理，72小时一次",
+      "enabled": true,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 3 * * *",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "执行重型心跳：1. 运行 unified_health_check.sh 完整检查；2. 执行 sqlite vacuum；3. 清理 /tmp 下过期临时文件；4. 生成资源使用报告",
+        "model": "minimax-portal/MiniMax-M2.5",
+        "thinking": "off",
+        "timeoutSeconds": 120
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1772478000000,
+        "lastRunAtMs": 1772391600017,
+        "lastStatus": "ok",
+        "lastDurationMs": 48680,
+        "consecutiveErrors": 0,
+        "lastRunStatus": "ok",
+        "lastDelivered": false,
+        "lastDeliveryStatus": "not-delivered"
+      },
+      "updatedAtMs": 1772391648697
+    },
+    {
+      "id": "log-rotation",
+      "name": "日志轮转",
+      "description": "每天轮转日志，清理超过 2MB 的文件",
+      "enabled": true,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 4 * * *",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "main",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "systemEvent",
+        "text": "执行统一维护: bash ~/.openclaw/scripts/unified_maintenance.sh"
+      },
+      "state": {
+        "nextRunAtMs": 1772481600000,
+        "lastRunAtMs": 1772312400158,
+        "lastStatus": "ok",
+        "lastDurationMs": 32030,
+        "consecutiveErrors": 0,
+        "lastRunStatus": "ok",
+        "lastDeliveryStatus": "not-requested"
+      },
+      "updatedAtMs": 1772348728738
+    },
+    {
+      "id": "health-check",
+      "name": "Health Check - 阈值检测",
+      "description": "每小时阈值检测，核心监控（不能省）",
+      "enabled": true,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 */6 * * *",
+        "tz": "Asia/Shanghai",
+        "staggerMs": 300000
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "执行系统健康检查 + MiniMax订阅状态监控。记录到 state/health_status.json",
+        "model": "minimax-portal/MiniMax-M2.5",
+        "thinking": "off",
+        "timeoutSeconds": 300
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1772424033483,
+        "lastRunAtMs": 1772402433500,
+        "lastStatus": "ok",
+        "lastDurationMs": 33555,
+        "consecutiveErrors": 0,
+        "lastRunStatus": "ok",
+        "lastDeliveryStatus": "not-delivered",
+        "lastDelivered": false
+      },
+      "updatedAtMs": 1772402467055
+    },
+    {
+      "id": "memory-compress",
+      "name": "记忆压缩 - L2→L3",
+      "description": "每日2次压缩低活跃度记忆 (L2→L3)",
+      "enabled": true,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 2,14 * * *",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "main",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "systemEvent",
+        "text": "执行记忆压缩：运行 ~/.openclaw/scripts/unified_memory.sh cleanup - 清理过期记忆日志",
+        "message": "执行内存压缩 + 备份: ~/.openclaw/scripts/modules/backup/backup.sh full"
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1772431200000,
+        "lastRunAtMs": 1772388000023,
+        "lastStatus": "ok",
+        "lastDurationMs": 11307,
+        "consecutiveErrors": 0,
+        "lastRunStatus": "ok",
+        "lastDeliveryStatus": "not-requested"
+      },
+      "updatedAtMs": 1772388011330
+    },
+    {
+      "id": "auto-summarize",
+      "name": "自动摘要 - 智能触发",
+      "description": "每日2次固定 + 智能触发（会话>2500tokens 且 连续3轮+ 且 6h未摘要），每日上限4次",
+      "enabled": true,
+      "schedule": {
+        "expr": "0 8,12,18,22 * * *",
+        "kind": "cron",
+        "tz": "Asia/Shanghai",
+        "staggerMs": 300000
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "model": "minimax-portal/MiniMax-M2.5",
+        "thinking": "off",
+        "timeoutSeconds": 120,
+        "message": "请执行以下任务：\n1. 检查 state/summary_count.json 中今日摘要次数是否已达上限（6次）\n2. 如果已达上限，跳过执行\n3. 否则执行：检查 behavior.db 中今日累计 token 是否超过 1500\n4. 检查是否存在连续 3 轮以上的活跃会话\n5. 检查最近 6 小时内是否有执行过摘要\n6. 如果以上 3 个条件同时满足，执行摘要：总结最近 10 条对话核心逻辑、待办事项、关键路径，300字以内，保存到 ~/.openclaw/memory/snapshot_$(date +%Y%m%d_%H%M%S).md\n7. 完成后更新 state/summary_count.json 中的当日计数\n8. 清理 behavior 表中 30 天前的旧记录"
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1772424141863,
+        "lastStatus": "ok",
+        "lastRunAtMs": 1772409741880,
+        "lastDurationMs": 25635,
+        "consecutiveErrors": 0,
+        "lastRunStatus": "ok",
+        "lastDeliveryStatus": "not-delivered",
+        "lastDelivered": false
+      },
+      "updatedAtMs": 1772409767515
+    },
+    {
+      "id": "08bb1f96-991a-4414-8d45-5c1068f2ea72",
+      "name": "Daily Security Audit",
+      "description": "每日凌晨5点安全体检并发送简报",
+      "enabled": true,
+      "createdAtMs": 1772247216332,
+      "updatedAtMs": 1772398816432,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 5 * * *"
+      },
+      "sessionTarget": "main",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "systemEvent",
+        "text": "security_audit"
+      },
+      "state": {
+        "nextRunAtMs": 1772485200000,
+        "lastRunAtMs": 1772398800016,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 16416,
+        "lastDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "36d6c014-50cf-4f66-af6f-6a4b31cb9798",
+      "name": "Daily Backup + GitHub",
+      "description": "每日凌晨3:30备份+GitHub推送",
+      "enabled": true,
+      "createdAtMs": 1772252935995,
+      "updatedAtMs": 1772393460264,
+      "schedule": {
+        "kind": "cron",
+        "expr": "30 3 * * *"
+      },
+      "sessionTarget": "main",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "systemEvent",
+        "text": "执行 ~/.openclaw/scripts/unified_backup.sh local - L2每日3:30镜像备份，保留3天"
+      },
+      "state": {
+        "nextRunAtMs": 1772479800000,
+        "lastRunAtMs": 1772393400018,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 60246,
+        "lastDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "session-cleanup",
+      "name": "会话清理 - 7天过期",
+      "description": "每周清理 7 天前的过期会话",
+      "enabled": true,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 2 * * *",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "执行会话清理：运行 openclaw sessions cleanup --enforce 清理 7 天前的过期会话",
+        "model": "minimax-portal/MiniMax-M2.1",
+        "thinking": "off",
+        "timeoutSeconds": 60
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1772474400000,
+        "lastRunAtMs": 1772388011330,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 24963,
+        "lastDelivered": false,
+        "lastDeliveryStatus": "not-delivered",
+        "consecutiveErrors": 0
+      },
+      "updatedAtMs": 1772388036293
+    },
+    {
+      "id": "morning-warmup",
+      "name": "早上预热 - 保持会话活跃",
+      "description": "每天早上自动发送消息，保持会话热状态",
+      "enabled": true,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8 * * *",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "main",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "systemEvent",
+        "text": "早上好！我是 Jarvis，今天有什么我可以帮你的？保持会话活跃，预热完成。"
+      },
+      "state": {
+        "nextRunAtMs": 1772496000000,
+        "lastRunAtMs": 1772409600019,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 7825,
+        "lastDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0
+      },
+      "updatedAtMs": 1772409607844
+    },
+    {
+      "id": "memory-size-monitor",
+      "name": "记忆数据量监控",
+      "description": "每周检查记忆目录大小，超过100MB时提醒启用向量数据库",
+      "enabled": true,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 6 * * 0",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "执行 ~/.openclaw/scripts/check_memory_size.sh 检查记忆数据量，如果超过100MB则提醒用户启用 memory-lancedb 向量数据库",
+        "model": "minimax-portal/MiniMax-M2.1",
+        "thinking": "off",
+        "timeoutSeconds": 30
+      },
+      "delivery": {
+        "mode": "announce"
+      },
+      "state": {
+        "nextRunAtMs": 1772920800000,
+        "lastRunAtMs": 1772316000186,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 13503,
+        "lastDelivered": false,
+        "lastDeliveryStatus": "not-delivered",
+        "consecutiveErrors": 0
+      },
+      "updatedAtMs": 1772316013689
+    },
+    {
+      "id": "fe994f1a-b1ba-4504-bb29-8fdab4a20951",
+      "agentId": "main",
+      "sessionKey": "agent:main:feishu:direct:heartbeat",
+      "name": "Gateway 每日自动重启",
+      "enabled": true,
+      "createdAtMs": 1772312659053,
+      "updatedAtMs": 1772385636152,
+      "schedule": {
+        "expr": "0 4,16 * * *",
+        "kind": "cron",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "执行 `openclaw gateway restart` 并确认重启成功",
+        "timeoutSeconds": 180
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1772438400000,
+        "lastRunAtMs": 1772352000157,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 30014,
+        "lastDeliveryStatus": "not-requested",
+        "consecutiveErrors": 1
+      }
+    },
+    {
+      "id": "505d49f1-538c-4fea-938f-6279c4e88fe5",
+      "agentId": "main",
+      "sessionKey": "agent:main:feishu:direct:ou_172731b40e648fba5a85fbfecf0af758",
+      "name": "模型分级统计",
+      "enabled": true,
+      "createdAtMs": 1772348109547,
+      "updatedAtMs": 1772348134045,
+      "schedule": {
+        "expr": "0 10 * * 0",
+        "kind": "cron",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "执行 ~/.openclaw/scripts/model_select.sh stats 统计本周模型分级使用情况，如果升级比例低于10%则提醒调整阈值",
+        "model": "minimax-portal/MiniMax-M2.1",
+        "thinking": "off",
+        "timeoutSeconds": 30
+      },
+      "delivery": {
+        "mode": "announce",
+        "to": "ou_172731b40e648fba5a85fbfecf0af758",
+        "channel": "feishu"
+      },
+      "state": {
+        "nextRunAtMs": 1772935200000
+      }
+    },
+    {
+      "id": "6f4543e5-a7a4-4d7a-95e7-6f478596dff6",
+      "agentId": "main",
+      "sessionKey": "agent:main:feishu:direct:ou_172731b40e648fba5a85fbfecf0af758",
+      "name": "MiniMax Coding Plan 告警",
+      "enabled": true,
+      "createdAtMs": 1772365850661,
+      "updatedAtMs": 1772365850661,
+      "schedule": {
+        "expr": "0 12 * * *",
+        "kind": "cron",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "执行 ~/.openclaw/scripts/check_minimax_usage.sh 检查 MiniMax Coding Plan 使用量，超过70%时发送告警",
+        "model": "minimax-portal/MiniMax-M2.1",
+        "thinking": "off",
+        "timeoutSeconds": 30
+      },
+      "delivery": {
+        "mode": "announce",
+        "to": "ou_172731b40e648fba5a85fbfecf0af758",
+        "channel": "feishu"
+      },
+      "state": {
+        "nextRunAtMs": 1772424000000
+      }
+    },
+    {
+      "id": "bd4e1060-4d20-4a99-bee1-5df9b32b26b0",
+      "agentId": "main",
+      "sessionKey": "agent:main:feishu:direct:ou_172731b40e648fba5a85fbfecf0af758",
+      "name": "分层备份 - L1 Git同步",
+      "enabled": true,
+      "createdAtMs": 1772382458965,
+      "updatedAtMs": 1772409880217,
+      "schedule": {
+        "expr": "0 */2 * * *",
+        "kind": "cron",
+        "tz": "Asia/Shanghai",
+        "staggerMs": 300000
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "执行 ~/.openclaw/scripts/unified_backup.sh git - L1每2小时Git同步",
+        "model": "minimax-portal/MiniMax-M2.1",
+        "thinking": "off",
+        "timeoutSeconds": 30
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1772417037187,
+        "lastRunAtMs": 1772409861119,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 19098,
+        "lastDelivered": false,
+        "lastDeliveryStatus": "not-delivered",
+        "consecutiveErrors": 0
+      }
+    },
+    {
+      "id": "5f469e72-f19a-46d8-bef3-15342b4bb907",
+      "agentId": "main",
+      "sessionKey": "agent:main:feishu:direct:ou_172731b40e648fba5a85fbfecf0af758",
+      "name": "分层备份 - L3 每周加密",
+      "enabled": true,
+      "createdAtMs": 1772382467560,
+      "updatedAtMs": 1772382467560,
+      "schedule": {
+        "expr": "0 4 * * 0",
+        "kind": "cron",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "执行 ~/.openclaw/scripts/unified_backup.sh encrypt - L3每周日4点加密备份，保留7天",
+        "model": "minimax-portal/MiniMax-M2.1",
+        "thinking": "off",
+        "timeoutSeconds": 60
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1772913600000
+      }
+    },
+    {
+      "id": "32f90c2b-7274-4cd5-8988-cc5101a597c5",
+      "agentId": "main",
+      "sessionKey": "agent:main:feishu:direct:ou_172731b40e648fba5a85fbfecf0af758",
+      "name": "自动摘要效果观察",
+      "enabled": true,
+      "createdAtMs": 1772384133657,
+      "updatedAtMs": 1772384133657,
+      "schedule": {
+        "expr": "0 10 * * *",
+        "kind": "cron",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "检查自动摘要优化效果：1. 查看 state/summary_count.json 今日触发次数；2. 查看 session_status 当前上下文占用；3. 更新 ~/.openclaw/workspace/notes/summary-optimization观察.md；4. 如果触发次数≥3或上下文<60%，报告优化有效；否则报告需调整",
+        "model": "minimax-portal/MiniMax-M2.1",
+        "thinking": "off",
+        "timeoutSeconds": 30
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "feishu",
+        "to": "ou_172731b40e648fba5a85fbfecf0af758"
+      },
+      "state": {
+        "nextRunAtMs": 1772416800000
+      }
+    },
+    {
+      "id": "77bbb45c-d69a-4dbf-911f-fda72d1324c7",
+      "agentId": "main",
+      "sessionKey": "agent:main:feishu:direct:ou_172731b40e648fba5a85fbfecf0af758",
+      "name": "Token每日追踪",
+      "enabled": true,
+      "createdAtMs": 1772385070745,
+      "updatedAtMs": 1772385070745,
+      "schedule": {
+        "expr": "0 23 * * *",
+        "kind": "cron",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "执行 ~/.openclaw/scripts/token_tracker.sh 记录今日Token消耗到日志",
+        "model": "minimax-portal/MiniMax-M2.1",
+        "thinking": "off",
+        "timeoutSeconds": 30
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1772463600000
+      }
+    },
+    {
+      "id": "01f856db-d738-444c-bc6e-fb4f63e3f7c2",
+      "agentId": "main",
+      "sessionKey": "agent:main:feishu:direct:ou_172731b40e648fba5a85fbfecf0af758",
+      "name": "Auto Heal - 系统异常自愈",
+      "description": "每小时检测系统负载和异常进程，负载过高时自动跳过耗时任务",
+      "enabled": true,
+      "createdAtMs": 1772386698152,
+      "updatedAtMs": 1772409861095,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 * * * *",
+        "tz": "Asia/Shanghai",
+        "staggerMs": 300000
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "执行 ~/.openclaw/scripts/auto_heal.sh 或 ~/.openclaw/workspace/scripts/auto_heal.sh 检查系统健康状态",
+        "model": "minimax-portal/MiniMax-M2.1",
+        "thinking": "off",
+        "timeoutSeconds": 30
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1772413431053,
+        "lastRunAtMs": 1772409831070,
+        "lastRunStatus": "error",
+        "lastStatus": "error",
+        "lastDurationMs": 30025,
+        "lastDeliveryStatus": "not-requested",
+        "consecutiveErrors": 3,
+        "lastError": "cron: job execution timed out"
+      }
+    }
+  ]
+}

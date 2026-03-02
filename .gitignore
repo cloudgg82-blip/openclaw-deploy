@@ -1,0 +1,16 @@
+# 敏感文件
+credentials/
+*.log
+*.db
+state/
+logs/
+node_modules/
+
+# OpenClaw
+.backup/
+.backups/
+backup*/
+disabled_backup*/
+
+# macOS
+.DS_Store
