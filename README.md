@@ -8,7 +8,7 @@
 
 ```bash
 # 克隆后运行
-git clone https://github.com/your-repo/openclaw-deploy.git
+git clone https://github.com/cloudgg82-blip/openclaw-deploy.git
 cd openclaw-deploy
 ./deploy.sh
 ```
