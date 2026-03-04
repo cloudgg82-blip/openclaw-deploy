@@ -1,0 +1,105 @@
+name: Sync Updates to README
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'skills/**'
+      - 'lib/**'
+      - 'scripts/**'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout this repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Get latest commits from myclaw-backup
+        run: |
+          # Get last 3 commits from myclaw-backup
+          COMMITS=$(curl -s \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/cloudgg82-blip/myclaw-backup/commits?per_page=3 \
+            | python3 -c "
+import json, sys
+data = json.load(sys.stdin)
+for c in data:
+    msg = c['commit']['message'].split('\n')[0][:80]
+    date = c['commit']['author']['date'][:10]
+    print(f'- {date} {msg}')
+")
+
+          echo "COMMITS<<EOF" >> $GITHUB_ENV
+          echo "$COMMITS" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Update README.md
+        run: |
+          python3 << 'EOF'
+import re
+from datetime import datetime
+
+# Read current README
+with open('README.md', 'r') as f:
+    content = f.read()
+
+# Get commits from env
+commits = """${{ env.COMMITS }}""".strip()
+
+if not commits:
+    print("No commits to sync")
+    exit(0)
+
+# Create update section
+today = datetime.now().strftime("%Y-%m-%d")
+update_section = f"""## 📋 更新日志
+
+### {today}
+{commits}
+
+---"""
+
+# Check if there's already an update log section
+if '## 📋 更新日志' in content:
+    # Find and replace the section
+    pattern = r'(## 📋 更新日志\n+)(### \d{4}-\d{2}-\d{2}[\s\S]*?)(---)'
+    replacement = f'''\\1### {today}
+{commits}
+
+---'''
+    new_content = re.sub(pattern, replacement, content, count=1)
+else:
+    # Insert after the title
+    lines = content.split('\n')
+    insert_idx = 0
+    for i, line in enumerate(lines):
+        if line.startswith('## '):
+            insert_idx = i
+            break
+    
+    new_lines = lines[:insert_idx+1] + ['', update_section] + lines[insert_idx+1:]
+    new_content = '\n'.join(new_lines)
+
+# Write back
+with open('README.md', 'w') as f:
+    f.write(new_content)
+
+print("README updated successfully!")
+EOF
+
+      - name: Commit and push
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add README.md
+          git diff --staged --quiet || git commit -m "docs: sync updates from myclaw-backup"
+          git push
