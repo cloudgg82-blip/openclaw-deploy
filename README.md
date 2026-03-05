@@ -1,14 +1,14 @@
 # 🤖 Personal AI Assistant
 
-> 一键部署个人 AI 助理
+> One-click deployment for your private AI assistant
 
-## 🚀 一键安装（推荐）
+## 🚀 One-Click Install (Recommended)
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/cloudgg82-blip/openclaw-deploy/main/deploy.sh | bash
 ```
 
-### 或克隆部署
+### Or Clone & Deploy
 
 ```bash
 git clone https://github.com/cloudgg82-blip/openclaw-deploy.git
@@ -18,121 +18,119 @@ cd openclaw-deploy
 
 ---
 
-## 📋 系统核心功能
+## 📋 Core Features
 
-| 功能模块 | 说明 |
-|----------|------|
-| **多渠道消息** | 飞书、Telegram、Discord、WhatsApp 全支持 |
-| **智能对话** | MiniMax 大模型（M2.1/M2.5），超长记忆 |
-| **技能系统** | 20+ 内置技能（天气、PPT、Excel、网页抓取等） |
-| **记忆系统** | 三层记忆架构，自动摘要与压缩 |
-| **定时任务** | Cron 自动化（心跳检查、日志轮转、备份） |
-| **系统监控** | 实时健康检测、内存/磁盘告警 |
-| **安全防护** | 危险操作拦截、敏感信息脱敏 |
-| **自我优化引擎** | 每日复盘、能力计分卡、自动 Patch 生成与验证 |
-
----
-
-## 📝 更新日志
-
-每次 push 到 myclaw-backup 主分支后自动同步：
-
-### 历史更新
-
-| 日期 | 更新内容 |
-|------|---------|
-| 2026-03-05 | **自我优化引擎 v2**：每日复盘、能力计分卡、Patch 生成/执行/验证闭环 |
-| 2026-03-04 | A股热点识别系统：信号打分+热点主题+RSSHub接入 |
-| 2026-02-26 | Beads 问题跟踪系统集成 |
-| 2026-02-20 | ARCHITECTURE.md v2.0 精简方案 |
+| Feature | Description |
+|---------|-------------|
+| **Multi-Channel Messaging** | Feishu, Telegram, Discord, WhatsApp |
+| **Smart Conversation** | MiniMax LLMs (M2.1/M2.5), extended memory |
+| **Skill System** | 20+ built-in skills (weather, PPT, Excel, web scraping, etc.) |
+| **Memory System** | 3-layer architecture, auto-summarization & compression |
+| **Scheduled Tasks** | Cron automation (heartbeat, log rotation, backup) |
+| **System Monitoring** | Real-time health checks, memory/disk alerts |
+| **Security** | Dangerous operation blocking, sensitive data masking |
+| **Self-Optimization Engine** | Daily review, capability scoring, auto patch generation |
 
 ---
 
-## 💻 支持的终端系统
+## 📝 Changelog
 
-### ✅ 操作系统 | 版本 支持的系统
+Auto-synced from myclaw-backup main branch on each push:
 
-| | 状态 |
-|----------|------|------|
-| **macOS** | 12.0 (Monterey) 或更高 | ✅ 完全支持 |
-| **Linux Ubuntu** | 20.04 或更高 | ✅ 完全支持 |
-| **Linux Debian** | 11 或更高 | ✅ 完全支持 |
-| **Linux CentOS** | 8 或更高 | ✅ 完全支持 |
-| **Linux Arch** | 最新版 | ✅ 完全支持 |
-
-### ❌ 不支持
-
-| 操作系统 | 说明 |
-|----------|------|
-| Windows | 需通过 WSL 运行 |
+| Date | Update |
+|------|--------|
+| 2026-03-05 | **Self-Optimization Engine v2**: daily review, scoring, patch pipeline |
+| 2026-03-04 | A-Stock hotspot system: signal scoring + RSSHub integration |
+| 2026-02-26 | Beads issue tracking system integration |
+| 2026-02-20 | ARCHITECTURE.md v2.0 optimization |
 
 ---
 
-## 🖥️ 硬件要求
+## 💻 Supported Platforms
 
-### 最低配置
+### ✅ Supported OS
 
-| 项目 | 要求 |
-|------|------|
-| CPU | Apple Silicon 或 Intel x86_64 |
-| 内存 | 4 GB |
-| 存储 | 10 GB 可用空间 |
+| OS | Version | Status |
+|----|---------|--------|
+| **macOS** | 12.0 (Monterey) or higher | ✅ Supported |
+| **Linux Ubuntu** | 20.04 or higher | ✅ Supported |
+| **Linux Debian** | 11 or higher | ✅ Supported |
+| **Linux CentOS** | 8 or higher | ✅ Supported |
+| **Linux Arch** | Latest | ✅ Supported |
 
-### 推荐配置
+### ❌ Not Supported
 
-| 项目 | 推荐 |
-|------|------|
-| CPU | Apple Silicon (M1/M2/M3) 或 Intel i5+ |
-| 内存 | 8 GB 或以上 |
-| 存储 | 20 GB 可用空间（SSD） |
-
----
-
-## 📀 软件环境要求
-
-### 必要软件
-
-| 软件 | 版本要求 | 说明 |
-|------|----------|------|
-| **Node.js** | 20.x 或更高 | 自动安装 |
-| **Git** | 任意版本 | 自动安装 |
-| **Homebrew** | 最新版 | macOS 自动安装 |
-
-### 网络要求
-
-| 域名 | 用途 |
-|------|------|
-| github.com | 代码仓库访问 |
-| api.minimaxi.com | MiniMax 大模型 API |
-| open.feishu.cn | 飞书消息 API |
+| OS | Note |
+|----|------|
+| Windows | Use WSL instead |
 
 ---
 
-## 📦 仓库内容
+## 🖥️ Hardware Requirements
 
-| 目录 | 说明 |
-|------|------|
-| `deploy.sh` | 一键部署脚本 |
-| `configs/` | 脱敏配置文件 |
-| `scripts/` | 核心工具脚本 |
-| `optional/` | 可选组件（Beads） |
-| `DEPLOY_GUIDE.md` | 完整部署指南 |
+### Minimum
+
+| Component | Requirement |
+|-----------|-------------|
+| CPU | Apple Silicon or Intel x86_64 |
+| RAM | 4 GB |
+| Storage | 10 GB free |
+
+### Recommended
+
+| Component | Recommended |
+|-----------|-------------|
+| CPU | Apple Silicon (M1/M2/M3) or Intel i5+ |
+| RAM | 8 GB or more |
+| Storage | 20 GB free (SSD) |
 
 ---
 
-## ⚙️ 首次配置
+## 📀 Software Requirements
 
-部署后编辑 `configs/openclaw.json` 替换以下占位符：
+### Required
 
-| 占位符 | 说明 | 获取 |
-|--------|------|------|
+| Software | Version | Note |
+|----------|---------|------|
+| **Node.js** | 20.x or higher | Auto-installed |
+| **Git** | Any version | Auto-installed |
+| **Homebrew** | Latest | Auto-installed on macOS |
+
+### Network
+
+| Domain | Purpose |
+|--------|---------|
+| github.com | Repository access |
+| api.minimaxi.com | MiniMax LLM API |
+| open.feishu.cn | Feishu messaging API |
+
+---
+
+## 📦 Repository Contents
+
+| Directory | Description |
+|-----------|-------------|
+| `deploy.sh` | One-click deployment script |
+| `configs/` | Template config files (redacted) |
+| `scripts/` | Core utility scripts |
+| `optional/` | Optional components (Beads) |
+| `DEPLOY_GUIDE.md` | Full deployment guide |
+
+---
+
+## ⚙️ Initial Configuration
+
+After deployment, edit `configs/openclaw.json` and replace placeholders:
+
+| Placeholder | Description | Get from |
+|-------------|-------------|----------|
 | `${OPENCLAW_API_KEY}` | MiniMax API Key | [platform.minimaxi.com](https://platform.minimaxi.com) |
-| `${FEISHU_APP_ID}` | 飞书 App ID | [open.feishu.cn](https://open.feishu.cn) |
-| `${FEISHU_APP_SECRET}` | 飞书 App Secret | 同上 |
+| `${FEISHU_APP_ID}` | Feishu App ID | [open.feishu.cn](https://open.feishu.cn) |
+| `${FEISHU_APP_SECRET}` | Feishu App Secret | Same as above |
 
 ---
 
-## ✅ 验证部署
+## ✅ Verify Deployment
 
 ```bash
 openclaw status
@@ -140,11 +138,11 @@ openclaw status
 
 ---
 
-## 📖 完整文档
+## 📖 Documentation
 
-- [部署指南（含硬件/软件要求）](DEPLOY_GUIDE.md)
-- [OpenClaw 官方文档](https://docs.openclaw.ai)
+- [Deployment Guide](DEPLOY_GUIDE.md)
+- [Official Docs](https://docs.openclaw.ai)
 
 ---
 
-**5分钟部署，一个命令上手！** 🚀
+**Deploy in 5 minutes with one command!** 🚀
