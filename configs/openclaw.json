@@ -64,7 +64,7 @@
   "agents": {
     "defaults": {
       "model": {
-        "primary": "minimax-portal/MiniMax-M2.5"
+        "primary": "minimax-portal/MiniMax-M2.1"
       },
       "models": {
         "minimax-portal/MiniMax-M2.1": {
