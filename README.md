@@ -1,4 +1,4 @@
-# 🤖 本地私人AI助理
+# 🤖 Personal AI Assistant
 
 > 一键部署个人 AI 助理
 
